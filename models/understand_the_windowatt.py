@@ -106,12 +106,12 @@ class WindowAttention(nn.Module):
         return flops
 
 
-window_size = [7, 7]
+window_size = [5, 5]
 num_heads = 2
 dim = 64
 
 relative_position_bias_table = nn.Parameter(
-            torch.zeros((2 * window_size[0] - 1) * (2 * window_size[1] - 1), num_heads))  # 2*Wh-1 * 2*Ww-1, nH
+            torch.randn((2 * window_size[0] - 1) * (2 * window_size[1] - 1), num_heads))  # 2*Wh-1 * 2*Ww-1, nH
 
         # get pair-wise relative position index for each token inside the window
 coords_h = torch.arange(window_size[0])
@@ -120,9 +120,13 @@ coords = torch.stack(torch.meshgrid([coords_h, coords_w]))  # 2, Wh, Ww
 coords_flatten = torch.flatten(coords, 1)  # 2, Wh*Ww
 relative_coords = coords_flatten[:, :, None] - coords_flatten[:, None, :]  # 2, Wh*Ww, Wh*Ww
 relative_coords = relative_coords.permute(1, 2, 0).contiguous()  # Wh*Ww, Wh*Ww, 2
+print(relative_coords)
 relative_coords[:, :, 0] += window_size[0] - 1  # shift to start from 0
+print(relative_coords)
 relative_coords[:, :, 1] += window_size[1] - 1
+print(relative_coords)
 relative_coords[:, :, 0] *= 2 * window_size[1] - 1
+print(relative_coords)
 relative_position_index = relative_coords.sum(-1)  # Wh*Ww, Wh*Ww
 # nn.Module.register_buffer('relative_position_index', relative_position_index)
 
@@ -135,19 +139,28 @@ relative_position_index = relative_coords.sum(-1)  # Wh*Ww, Wh*Ww
 # softmax = nn.Softmax(dim=-1)
 
 
-x = torch.randn(1,14*14,1)
-print(coords)
-print(coords_flatten)
-print(coords_flatten[:, None, :])
-print(coords_flatten[:, None, :].shape)
+# x = torch.randn(1,14*14,1)
+# print(coords)
+# print(coords_flatten)
+# print(coords_flatten[:, None, :])
+# print(coords_flatten[:, None, :].shape)
 
 print(relative_position_index)
 print(relative_position_index.shape)
-print(coords.shape)
-print(coords_flatten[:, :, None].shape)
-print(coords_flatten[:, None, :].shape)
-print(relative_coords.shape)
+# print(coords.shape)
+# print(coords_flatten[:, :, None].shape)
+# print(coords_flatten[:, None, :].shape)
+# print(relative_coords.shape)
 
-plt.matshow(relative_position_index.numpy())
+# plt.matshow(relative_position_index.numpy())
 
-plt.show()
+# plt.show()
+
+relative_position_bias = relative_position_bias_table[relative_position_index.view(-1)].view(
+    window_size[0] * window_size[1], window_size[0] * window_size[1], -1
+)
+print(relative_position_bias.shape)
+relative_position_bias = relative_position_bias.permute(2, 0, 1).contiguous()
+print(relative_position_bias.shape)
+relative_position_bias = relative_position_bias.unsqueeze(0)
+print(relative_position_bias.shape)
