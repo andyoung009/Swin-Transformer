@@ -594,8 +594,8 @@ class SwinTransformer(nn.Module):
         for layer in self.layers:
             x = layer(x)
 
-        x = self.norm(x)  # B L C
-        x = self.avgpool(x.transpose(1, 2))  # B C 1
+        x = self.norm(x)  # B L C'(c' is the number of int(embed_dim * 2 ** (self.num_layers - 1)))
+        x = self.avgpool(x.transpose(1, 2))  # B C' 1
         x = torch.flatten(x, 1)
         return x
 

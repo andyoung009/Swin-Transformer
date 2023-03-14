@@ -11,25 +11,27 @@ transform = transforms.Compose([
     transforms.ToTensor(),
 ])
 x = transform(img).unsqueeze(0)
-print(x.shape)
-x = x.permute(0, 2, 3, 1)
-# plt.matshow(x.squeeze(0).squeeze(-1))
-x0 = x[:, 0::2, 0::2, :]  # B H/2 W/2 C
-x1 = x[:, 1::2, 0::2, :]  # B H/2 W/2 C
-x2 = x[:, 0::2, 1::2, :]  # B H/2 W/2 C
-x3 = x[:, 1::2, 1::2, :]  # B H/2 W/2 C
-print(x0.shape)
-x0 = x0.squeeze(0).squeeze(-1)
-x0_0 = x0.squeeze(0)[:,:,0]
-x0_1 = x0.squeeze(0)[:,:,1]
-x0_2 = x0.squeeze(0)[:,:,2]
-print(x0.shape)
-print(x0_1.shape)
-plt.matshow(x0)
-plt.matshow(x0_0)
-plt.matshow(x0_1)
-plt.matshow(x0_2)
-plt.show()
+# print(x.shape)
+# x = x.permute(0, 2, 3, 1)
+# # plt.matshow(x.squeeze(0).squeeze(-1))
+# x0 = x[:, 0::2, 0::2, :]  # B H/2 W/2 C
+# x1 = x[:, 1::2, 0::2, :]  # B H/2 W/2 C
+# x2 = x[:, 0::2, 1::2, :]  # B H/2 W/2 C
+# x3 = x[:, 1::2, 1::2, :]  # B H/2 W/2 C
+# print(x0.shape)
+# x0 = x0.squeeze(0).squeeze(-1)
+# x0_0 = x0.squeeze(0)[:,:,0]
+# x0_1 = x0.squeeze(0)[:,:,1]
+# x0_2 = x0.squeeze(0)[:,:,2]
+# print(x0.shape)
+# print(x0_1.shape)
+# plt.matshow(x0)
+# plt.matshow(x0_0)
+# plt.matshow(x0_1)
+# plt.matshow(x0_2)
+# plt.show()
+
+
 # # 使用上述代码段进行处理
 # class SwinTransformerBlock(torch.nn.Module):
 #     def __init__(self, input_resolution, num_heads, window_size, shift_size, mlp_ratio=4.0):
@@ -71,3 +73,12 @@ plt.show()
 
 # 输出处理后的张量
 # print(y.shape)
+
+
+# test the "build layers" of the SwinTransformer in Line547-Line563
+drop_path_rate = 0.1
+depths=[2, 2, 6, 2]
+dpr = [x.item() for x in torch.linspace(0, drop_path_rate, sum(depths))]
+for i_layer in range(len(depths)):
+    drop_path=dpr[sum(depths[:i_layer]):sum(depths[:i_layer + 1])]
+    print(drop_path)
