@@ -106,7 +106,7 @@ class WindowAttention(nn.Module):
         return flops
 
 
-window_size = [5, 5]
+window_size = [3, 3]
 num_heads = 2
 dim = 64
 
@@ -120,14 +120,15 @@ coords = torch.stack(torch.meshgrid([coords_h, coords_w]))  # 2, Wh, Ww
 coords_flatten = torch.flatten(coords, 1)  # 2, Wh*Ww
 relative_coords = coords_flatten[:, :, None] - coords_flatten[:, None, :]  # 2, Wh*Ww, Wh*Ww
 relative_coords = relative_coords.permute(1, 2, 0).contiguous()  # Wh*Ww, Wh*Ww, 2
-print(relative_coords)
+# print(relative_coords)
 relative_coords[:, :, 0] += window_size[0] - 1  # shift to start from 0
-print(relative_coords)
+# print(relative_coords)
 relative_coords[:, :, 1] += window_size[1] - 1
-print(relative_coords)
+# print(relative_coords)
 relative_coords[:, :, 0] *= 2 * window_size[1] - 1
-print(relative_coords)
+# print(relative_coords)
 relative_position_index = relative_coords.sum(-1)  # Wh*Ww, Wh*Ww
+# print(relative_position_index)
 # nn.Module.register_buffer('relative_position_index', relative_position_index)
 
 # qkv = nn.Linear(dim, dim * 3, bias=True)
@@ -146,7 +147,7 @@ relative_position_index = relative_coords.sum(-1)  # Wh*Ww, Wh*Ww
 # print(coords_flatten[:, None, :].shape)
 
 print(relative_position_index)
-print(relative_position_index.shape)
+print(relative_position_index.view(-1).shape)
 # print(coords.shape)
 # print(coords_flatten[:, :, None].shape)
 # print(coords_flatten[:, None, :].shape)
